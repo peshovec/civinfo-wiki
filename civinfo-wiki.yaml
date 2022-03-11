@@ -1,0 +1,123 @@
+# Save the output of this file and use kubectl create -f to import
+# it into Kubernetes.
+#
+# Created with podman-3.4.1
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2022-03-10T13:24:14Z"
+  labels:
+    app: civinfo-wiki
+  name: civinfo-wiki
+spec:
+  containers:
+  - args:
+    - mariadbd
+    env:
+    - name: MARIADB_MAJOR
+      value: "10.7"
+    - name: MARIADB_VERSION
+      value: 1:10.7.3+maria~focal
+    - name: GOSU_VERSION
+      value: "1.14"
+    - name: MARIADB_ALLOW_EMPTY_ROOT_PASSWORD
+      value: "yes"
+    image: docker.io/library/mariadb:latest
+    name: mariadb1
+    ports:
+    - containerPort: 80
+      hostIP: 192.168.0.234
+      hostPort: 8880
+    resources: {}
+    securityContext:
+      allowPrivilegeEscalation: true
+      capabilities:
+        drop:
+        - CAP_MKNOD
+        - CAP_NET_RAW
+        - CAP_AUDIT_WRITE
+      privileged: false
+      readOnlyRootFilesystem: false
+      seLinuxOptions: {}
+    volumeMounts:
+    - mountPath: /var/lib/mysql
+      name: home-alarm-rconfs-civinfo-wiki-mariadb_data-host-0
+    workingDir: /
+  - args:
+    - apache2-foreground
+    env:
+    - name: PHP_URL
+      value: https://www.php.net/distributions/php-7.4.28.tar.xz
+    - name: MEDIAWIKI_VERSION
+      value: 1.37.1
+    - name: APACHE_ENVVARS
+      value: /etc/apache2/envvars
+    - name: MEDIAWIKI_DATABASE_NAME
+      value: bitnami_mediawiki
+    - name: ALLOW_EMPTY_PASSWORD
+      value: "yes"
+    - name: PHP_INI_DIR
+      value: /usr/local/etc/php
+    - name: PHPIZE_DEPS
+      value: "autoconf \t\tdpkg-dev \t\tfile \t\tg++ \t\tgcc \t\tlibc-dev \t\tmake
+        \t\tpkg-config \t\tre2c"
+    - name: PHP_LDFLAGS
+      value: -Wl,-O1 -pie
+    - name: MEDIAWIKI_DATABASE_USER
+      value: bn_mediawiki
+    - name: PHP_VERSION
+      value: 7.4.28
+    - name: PHP_CFLAGS
+      value: -fstack-protector-strong -fpic -fpie -O2 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
+    - name: APACHE_CONFDIR
+      value: /etc/apache2
+    - name: PHP_CPPFLAGS
+      value: -fstack-protector-strong -fpic -fpie -O2 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
+    - name: PHP_ASC_URL
+      value: https://www.php.net/distributions/php-7.4.28.tar.xz.asc
+    - name: PHP_SHA256
+      value: 9cc3b6f6217b60582f78566b3814532c4b71d517876c25013ae51811e65d8fce
+    - name: MEDIAWIKI_MAJOR_VERSION
+      value: "1.37"
+    - name: GPG_KEYS
+      value: 42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312
+    - name: MEDIAWIKI_DATABASE_HOST
+      value: mariadb
+    - name: MEDIAWIKI_DATABASE_PORT_NUMBER
+      value: "3306"
+    image: docker.io/library/mediawiki:latest
+    name: wiki1
+    resources: {}
+    securityContext:
+      allowPrivilegeEscalation: true
+      capabilities:
+        drop:
+        - CAP_MKNOD
+        - CAP_NET_RAW
+        - CAP_AUDIT_WRITE
+      privileged: false
+      readOnlyRootFilesystem: false
+      seLinuxOptions: {}
+    volumeMounts:
+    - mountPath: /var/www/html/LocalSettings.php
+      name: home-alarm-rconfs-civinfo-wiki-mediawiki_data-LocalSettings.php-host-0
+    - mountPath: /var/www/html/images
+      name: home-alarm-rconfs-civinfo-wiki-mediawiki_data-images-host-1
+    workingDir: /var/www/html
+  dnsConfig: {}
+  restartPolicy: Never
+  volumes:
+  - hostPath:
+      path: /home/alarm/rconfs/civinfo-wiki/mariadb_data/data
+      type: Directory
+    name: home-alarm-rconfs-civinfo-wiki-mariadb_data-host-0
+  - hostPath:
+      path: /home/alarm/rconfs/civinfo-wiki/mediawiki_data/LocalSettings.php
+      type: File
+    name: home-alarm-rconfs-civinfo-wiki-mediawiki_data-LocalSettings.php-host-0
+  - hostPath:
+      path: /home/alarm/rconfs/civinfo-wiki/mediawiki_data/images
+      type: Directory
+    name: home-alarm-rconfs-civinfo-wiki-mediawiki_data-images-host-1
+status: {}
+
